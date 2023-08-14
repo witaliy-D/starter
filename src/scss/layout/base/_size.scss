@@ -25,8 +25,8 @@
 	@include media(lg) {
 		//* layout
 		--width-max-window: 100vw;
-		--width-min-window: #{$layout-size-max / 2};
-		--width-min-window-px: #{($layout-size-max / 2) + "px"};
+		--width-min-window: #{$layout-size-max * 0.5};
+		--width-min-window-px: #{($layout-size-max * 0.5) + "px"};
 		--min-value: 50;
 		--min-value-px: 50px;
 		--max-value: 100;

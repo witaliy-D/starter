@@ -36,14 +36,14 @@ $twenty20-label-radius: 2px !default;
   width: $twenty20-handle-stroke;
   height: 9999px;
   left: 50%;
-  margin-left: -($twenty20-handle-stroke / 2);
+  margin-left: -($twenty20-handle-stroke * 0.5);
 }
 
 %handle-position-vertical {
   width: 9999px;
   height: $twenty20-handle-stroke;
   top: 50%;
-  margin-top: -($twenty20-handle-stroke / 2);
+  margin-top: -($twenty20-handle-stroke * 0.5);
 }
 
 %absolute-wh-position {
@@ -77,12 +77,12 @@ $twenty20-label-radius: 2px !default;
 
 %label-position-horizontal {
   top: 50%;
-  margin-top: -($twenty20-overlay-label-height / 2);
+  margin-top: -($twenty20-overlay-label-height * 0.5);
 }
 
 %label-position-vertical {
   left: 50%;
-  margin-left: -($twenty20-overlay-label-width / 2);
+  margin-left: -($twenty20-overlay-label-width * 0.5);
   text-align: center;
   width: $twenty20-overlay-label-width;
 }
@@ -279,7 +279,7 @@ $twenty20-label-radius: 2px !default;
     @extend %handle-content;
     @extend %handle-position-vertical;
     left: 50%;
-    margin-left: ($twenty20-handle-circle-width/2) + $twenty20-handle-stroke;
+    margin-left: ($twenty20-handle-circle-width*0.5) + $twenty20-handle-stroke;
     box-shadow: $twenty20-handle-stroke 0 0 $twenty20-handle-color, $twenty20-handle-box-shadow;
   }
 
@@ -287,7 +287,7 @@ $twenty20-label-radius: 2px !default;
     @extend %handle-content;
     @extend %handle-position-vertical;
     right: 50%;
-    margin-right: ($twenty20-handle-circle-width/2) + $twenty20-handle-stroke;
+    margin-right: ($twenty20-handle-circle-width*0.5) + $twenty20-handle-stroke;
     box-shadow: (-$twenty20-handle-stroke) 0 0 $twenty20-handle-color, $twenty20-handle-box-shadow;
   }
 }

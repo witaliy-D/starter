@@ -1,4 +1,6 @@
 //* Функция преобразование базовых чисел в значения rem
+@use "sass:math";
+
 @function size(
                 $value,         //* Значение
                 $basic: 100,    //* Базовое значение   
@@ -6,22 +8,22 @@
                 ) {
     @if unitless($value) {
         @if $unit == 'rem' {
-            @return ($value / $basic + rem);
+            @return (math.div($value, $basic) + rem);
         }
         @else if $unit == 'em' {
-            @return ($value / $basic + em);
+            @return (math.div($value, $basic) + em);
         }
         @else if $unit == 'vw' {
-            @return (($value * 100)/ $basic + vw);
+            @return (math.div($value * 100, $basic) + vw);
         }     
         @else if $unit == 'vh' {
-            @return (($value * 100)/ $basic + vh);
+            @return (math.div($value * 100, $basic) + vh);
         }     
         @else if $unit == 'number' {
-            @return ($value / $basic);
+            @return math.div($value, $basic);
         }
         @else if $unit == '%' {
-            @return unquote((($value / $basic) * 100) + "%");
+            @return unquote((math.div($value, $basic) * 100) + "%");
         }
     }
     @else  {

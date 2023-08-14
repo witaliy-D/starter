@@ -1,11 +1,15 @@
 ﻿import gulp from "gulp"
 const { src, dest, parallel, series, watch } = gulp
-import sass from "gulp-sass";
+import gulpSass from "gulp-sass";
 import sourcemaps from "gulp-sourcemaps";
 import browserSync from "browser-sync";
-import del from "del";
-import gcmq from "gulp-group-css-media-queries";
-import autoprefixer from "gulp-autoprefixer";
+import { deleteAsync } from "del";
+//import gcmq from "gulp-group-css-media-queries";
+//import autoprefixer from "gulp-autoprefixer";
+import gcmq from 'postcss-sort-media-queries';
+import autoprefixer from 'autoprefixer';
+import postcss from 'gulp-postcss';
+import * as dartSass from 'sass';
 import fileinclude from "gulp-file-include";
 import cssnano from "gulp-cssnano";
 import concat from "gulp-concat";
@@ -20,6 +24,8 @@ import parseHTMLClass from "./core/parseHTMLClass.js";
 import addFilePage from "./core/pages.js";
 import addFileComponents from "./core/components.js";
 import addFileTemplate from "./core/template.js";
+
+const sass = gulpSass(dartSass);
 
 //* src  -  файлы разработки
 
@@ -66,8 +72,8 @@ let path = {
                         ],
         js_libraries:   [
                             "./src/assets/libraries/jquery.min.js",
-                            "./src/assets/libraries/lazyload.min.js",
-                            "./src/assets/libraries/swiper.min.js",
+                            //"./src/assets/libraries/lazyload.min.js",
+                            //"./src/assets/libraries/swiper.min.js",
                             "./src/assets/libraries/jquery.maskedinput.min.js",
                             //"./src/assets/libraries/anime.min.js",
                             //"./src/assets/libraries/fancybox.umd.js",
@@ -162,6 +168,14 @@ const browserslistrcJS = [
     "safari12",
 ]
 
+const postCssPlugins = [
+    gcmq(),
+    autoprefixer({
+        flexbox: false,
+        overrideBrowserslist: _Browserslist
+    }),
+];
+
 // Определяем логику работы Browsersync
 function browser_sync() {
     browserSync.init({
@@ -210,24 +224,21 @@ function PHPMailer() {
 // sass
 function styles() {
     return src(path.src.scss)
+    .pipe(sourcemaps.init())
     .pipe(sass())
-    .pipe(gcmq())
-    .pipe(autoprefixer({
-        flexbox: false,
-        overrideBrowserslist: _Browserslist}))
+    .pipe(postcss(postCssPlugins))
+    .pipe(sourcemaps.write('.'))
     .pipe(dest(path.build.css))
     .pipe(browserSync.stream());
 }
 
 function stylesBuild(){
-    del(path.build.css)
+    deleteAsync(path.build.css)
     return src(path.src.scss)
     .pipe(sass())
-    .pipe(gcmq())       // сбор медиа запросов
+    .pipe(postcss(postCssPlugins))
+    //.pipe(gcmq())       // сбор медиа запросов
     .pipe(cssnano({ minifyFontValues: false, discardUnused: false }))
-    .pipe(autoprefixer({
-        flexbox: false,
-        overrideBrowserslist: _Browserslist}))
     .pipe(dest(path.build.css));
 }
 
@@ -269,13 +280,13 @@ function files() {
 }
 // watch
 function startwatch() {
+    watch('./src/components/components.json',   {ignorePermissionErrors: true}, addFileComponents);
+    watch('./src/template/template.json',       {ignorePermissionErrors: true}, addFileTemplate);
     if (isDemo) {
-        watch(path.watch.html,          {ignorePermissionErrors: true}, demoHtml);
+        watch('./core/demo/*.html',          {ignorePermissionErrors: true}, demoHtml);
     }
     else {
         watch('./src/pages/pages.json',             {ignorePermissionErrors: true}, addFilePage);
-        watch('./src/components/components.json',   {ignorePermissionErrors: true}, addFileComponents);
-        watch('./src/template/template.json',       {ignorePermissionErrors: true}, addFileTemplate);
         watch(path.watch.html,                      {ignorePermissionErrors: true}, html);
     }
     watch(path.watch.scss,          {ignorePermissionErrors: true}, styles);
@@ -312,7 +323,7 @@ function images() {
 }
 //
 function imagesDel() {
-    return del(path.cleanimg);
+    return deleteAsync(path.cleanimg);
 }
 
 function imagesWebp(){
@@ -332,8 +343,9 @@ function svg() {
         } ,
 
         plugins: [{
-            cleanupIDs: {
-              minify: true
+            name: 'cleanupIDs',
+            params: {
+                minify: true
             }
         }]
     }))
@@ -364,7 +376,7 @@ function svg() {
 }
 // удаление папки dest
 function cleandest() {
-    return del(path.clean);
+    return deleteAsync(path.clean);
 }
 
 //
